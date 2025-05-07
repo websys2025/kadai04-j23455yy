@@ -6,6 +6,8 @@
     </head>
     <body>
         <h1 id="vending-machine">自動販売機システム</h1>
+        <h2>所持金</h2>
+        <p id="wallet"></p>
         <table id="item_area" border="1"></table>
         <script>
             // 商品一覧を記録する連想配列の配列
@@ -62,6 +64,11 @@
                 }
             } // End of Item class
 
+            //オプション課題
+            let wallet = 1000;
+            const walletArea = document.getElementById("wallet");
+            walletArea.innerText = `${wallet} 円`;
+
             // 商品テーブルのエレメント抽出
             const itemArea = document.getElementById("item_area");
             itemArea.innerHTML += "<tr><th>商品名</th><th>金額</th><th>在庫数</th><th>購入</th></tr>";
@@ -96,7 +103,13 @@
                     //ここ何を書くの？？？
                 // 課題4-1, 4-2のコードが完成したら、以下のコメントを外す
                 document.getElementById("button"+item_list[i].id).onclick = () => {
-                    item_list[i].buyItem();
+                    if (!(item_list[i].price > wallet)) {
+                        item_list[i].buyItem();
+                        wallet -= item_list[i].price;
+                        console.log(`${item_list[i].name} を購入しました。 残金は ${wallet} 円です。`);
+                    }else {
+                        alert("所持金が不足しています。")
+                    }
                 }
             }
             Item.showItemList(item_list);
