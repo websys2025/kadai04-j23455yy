@@ -39,7 +39,7 @@
 
                     // 配列の内容を項目毎に出力
                     // 課題4-1. ここにコードを書く
-                    for (let item of items) {
+                    for (let item of list) {
                         console.log(`商品番号: ${item.id}, 商品名: ${item.name}, 金額: ${item.price}, 在庫数: ${item.stock}`);
                     }
                     
@@ -48,26 +48,38 @@
                 
                 // 商品購入の関数
                 buyItem() {          
-                    if (this.stock >= 1) { 
+                    if (this.stock >= 1 && Human.balance >= this.price) { 
                         console.log("商品番号: "+this.id+", 商品名: "+this.name+"を購入します。");
                         // 課題4-2. ここにコードを書く
                         // 購入による商品の在庫削減処理
                         this.stock -= 1;
                         console.log(`残りは${this.stock}個です。`);
+                        Human.payMoney(this.price);
                         
                         // 課題4-3. ここにコードを書く
                         // 在庫用のエレメントを抽出し、HTML内の個数を更新
                         const stockArea = document.getElementById(`stock${this.id}`);
                         stockArea.innerText = this.stock;
 
-                    } else console.log(this.name+"は商品の在庫がないため購入できません。");
+                    } else if(this.stock <= 0) {
+                        console.log(this.name+"は商品の在庫がないため購入できません。");
+                    } else {
+                        console.log("所持金が不足しています");
+                    }
                 }
             } // End of Item class
 
+            class Human {
+                static balance = 1000;
+                static payMoney(price) {
+                    Human.balance -= price;
+                    console.log(`残高は${Human.balance}です。`);
+                }
+            }
+
             //オプション課題
-            let wallet = 1000;
             const walletArea = document.getElementById("wallet");
-            walletArea.innerText = `${wallet} 円`;
+            walletArea.innerText = `${Human.balance} 円`;
 
             // 商品テーブルのエレメント抽出
             const itemArea = document.getElementById("item_area");
@@ -89,10 +101,10 @@
             let tableHtml = "";
             for (let item of item_list) {
                 tableHtml += `<tr>
-                        <th>${item.name}</th>
-                        <th>${item.price}</th>
-                        <th id=stock${item.id}>${item.stock}</th>
-                        <th><button id=button${item.id} type="button">購入</button></th>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td id=stock${item.id}>${item.stock}</td>
+                        <td><button id=button${item.id} type="button">購入</button></td>
                     </tr>`
             } 
             itemArea.innerHTML += tableHtml;
@@ -103,13 +115,10 @@
                     //ここ何を書くの？？？
                 // 課題4-1, 4-2のコードが完成したら、以下のコメントを外す
                 document.getElementById("button"+item_list[i].id).onclick = () => {
-                    if (!(item_list[i].price > wallet)) {
-                        item_list[i].buyItem();
-                        wallet -= item_list[i].price;
-                        console.log(`${item_list[i].name} を購入しました。 残金は ${wallet} 円です。`);
-                    }else {
-                        alert("所持金が不足しています。")
-                    }
+                    item_list[i].buyItem();
+
+                    const walletArea = document.getElementById("wallet");
+                    walletArea.innerText = `${Human.balance} 円`;
                 }
             }
             Item.showItemList(item_list);
