@@ -67,12 +67,12 @@
             itemArea.innerHTML += "<tr><th>商品名</th><th>金額</th><th>在庫数</th><th>購入</th></tr>";
 
             // 配列のオブジェクト作成
-            const item_list = new Array(items.length);
-            const btn = new Array(items.length);
+            const item_list = new Array(items.length);  //この長さの初期化めちゃくちゃ邪魔
+            const btn = new Array(items.length);        //これいる？？？？
 
             // 課題4-1. ここにコード書く
             // 商品オブジェクトの生成
-            item_list.splice(0);        //65行目で無駄に配列の長さを指定しているが、邪魔なので一旦配列を空にする。
+            item_list.splice(0);        //65行目で長さを指定しているが、邪魔なので一旦配列を空にする。
             for (let item of items) {
                 item_list.push(new Item(item.name, item.price, item.stock));
             }
@@ -93,6 +93,7 @@
             // クリックイベント時の購入処理の設定
             for (let i=0; i<item_list.length; i++) {
                 // 課題4-3. ここにコードを書く
+                    //ここ何を書くの？？？
                 // 課題4-1, 4-2のコードが完成したら、以下のコメントを外す
                 document.getElementById("button"+item_list[i].id).onclick = () => {
                     item_list[i].buyItem();
