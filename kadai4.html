@@ -6,6 +6,8 @@
     </head>
     <body>
         <h1 id="vending-machine">自動販売機システム</h1>
+        <h2>所持金</h2>
+        <p id="wallet"></p>
         <table id="item_area" border="1"></table>
         <script>
             // 商品一覧を記録する連想配列の配列
@@ -33,47 +35,92 @@
 
                 // 商品一覧の表示関数
                 static showItemList(list) {
-                    console.log("商品は以下の" + Item.number + "種類です。");
+                    console.log("商品は以下の" + list.length + "種類です。");       //Item.number だと数ズレるよ
 
                     // 配列の内容を項目毎に出力
                     // 課題4-1. ここにコードを書く
+                    for (let item of list) {
+                        console.log(`商品番号: ${item.id}, 商品名: ${item.name}, 金額: ${item.price}, 在庫数: ${item.stock}`);
+                    }
+                    
                     console.log(""); // 空行の出力
                 }
                 
                 // 商品購入の関数
                 buyItem() {          
-                    if (this.stock >= 1) { 
+                    if (this.stock >= 1 && Human.balance >= this.price) { 
                         console.log("商品番号: "+this.id+", 商品名: "+this.name+"を購入します。");
                         // 課題4-2. ここにコードを書く
                         // 購入による商品の在庫削減処理
+                        this.stock -= 1;
+                        console.log(`残りは${this.stock}個です。`);
+                        Human.payMoney(this.price);
                         
                         // 課題4-3. ここにコードを書く
                         // 在庫用のエレメントを抽出し、HTML内の個数を更新
-                    } else console.log(this.name+"は商品の在庫がないため購入できません。");
+                        const stockArea = document.getElementById(`stock${this.id}`);
+                        stockArea.innerText = this.stock;
+
+                    } else if(this.stock <= 0) {
+                        console.log(this.name+"は商品の在庫がないため購入できません。");
+                    } else {
+                        console.log("所持金が不足しています");
+                    }
                 }
             } // End of Item class
+
+            class Human {
+                static balance = 1000;
+                static payMoney(price) {
+                    Human.balance -= price;
+                    console.log(`残高は${Human.balance}です。`);
+                }
+            }
+
+            //オプション課題
+            const walletArea = document.getElementById("wallet");
+            walletArea.innerText = `${Human.balance} 円`;
 
             // 商品テーブルのエレメント抽出
             const itemArea = document.getElementById("item_area");
             itemArea.innerHTML += "<tr><th>商品名</th><th>金額</th><th>在庫数</th><th>購入</th></tr>";
 
             // 配列のオブジェクト作成
-            const item_list = new Array(items.length);
-            const btn = new Array(items.length);
+            const item_list = new Array(items.length);  //この長さの初期化めちゃくちゃ邪魔
+            const btn = new Array(items.length);        //これいる？？？？
 
             // 課題4-1. ここにコード書く
             // 商品オブジェクトの生成
+            item_list.splice(0);        //65行目で長さを指定しているが、邪魔なので一旦配列を空にする。
+            for (let item of items) {
+                item_list.push(new Item(item.name, item.price, item.stock));
+                console.log(`id: ${item.id}, name: ${item.name}, price: ${item.price}, stock: ${item.stock}`);
+            }
 
             // 課題4-2. ここにコードを書く
             // 商品表の作成
+            let tableHtml = "";
+            for (let item of item_list) {
+                tableHtml += `<tr>
+                        <td>${item.name}</td>
+                        <td>${item.price}</td>
+                        <td id=stock${item.id}>${item.stock}</td>
+                        <td><button id=button${item.id} type="button">購入</button></td>
+                    </tr>`
+            } 
+            itemArea.innerHTML += tableHtml;
 
             // クリックイベント時の購入処理の設定
             for (let i=0; i<item_list.length; i++) {
                 // 課題4-3. ここにコードを書く
+                    //ここ何を書くの？？？
                 // 課題4-1, 4-2のコードが完成したら、以下のコメントを外す
-                //document.getElementById("button"+item_list[i].id).onclick = () => {
-                //    item_list[i].buyItem();
-                //}
+                document.getElementById("button"+item_list[i].id).onclick = () => {
+                    item_list[i].buyItem();
+
+                    const walletArea = document.getElementById("wallet");
+                    walletArea.innerText = `${Human.balance} 円`;
+                }
             }
             Item.showItemList(item_list);
 
