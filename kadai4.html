@@ -94,6 +94,7 @@
             item_list.splice(0);        //65行目で長さを指定しているが、邪魔なので一旦配列を空にする。
             for (let item of items) {
                 item_list.push(new Item(item.name, item.price, item.stock));
+                console.log(`id: ${item.id}, name: ${item.name}, price: ${item.price}, stock: ${item.stock}`);
             }
 
             // 課題4-2. ここにコードを書く
